@@ -41,5 +41,22 @@ def Criar_pedidos(mybd, mycursor, id_utilizador, id_produto, quantidade):
         mybd.rollback()
         return False
 
+def Atualizar_stock(mybd, mycursor, id_produto, nova_quantidade):
+    try:
+        sql = "UPDATE produtos SET stock = %s WHERE id_produto = %s"
+        mycursor.execute(sql, (nova_quantidade, id_produto))
+        mybd.commit()
+        return True
+    except mysql.connector.Error as err:
+        print(f"Erro ao atualizar o stock: {err}")
+        mybd.rollback()
+        return False
 
-    
+def Consultar_historico_pedidos(mycursor, id_utilizador):
+    try:
+        sql = "SELECT * FROM pedidos WHERE id_utilizador = %s"
+        mycursor.execute(sql, (id_utilizador,))
+        return mycursor.fetchall()
+    except mysql.connector.Error as err:
+        print(f"Erro ao consultar historico: {err}")
+        return None
