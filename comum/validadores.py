@@ -7,7 +7,7 @@ def validar_quantidade(quantidade):
     if isinstance(quantidade, int) and not isinstance(quantidade, bool):
         if quantidade > 0:
             return True
-        return False
+    return False
 
 def validar_preco(preco):
     try:

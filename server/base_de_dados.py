@@ -33,6 +33,16 @@ def Consultar_utilizador(mycursor, nome):
         return None
 
 
+def Impedir_Duplicados(mycursor, nome):
+    sql = """
+        SELECT 1 FROM utilizadores
+        WHERE nome_utilizador = %s
+        LIMIT 1
+    """
+    mycursor.execute(sql, (nome,))
+    return mycursor.fetchone() is not None
+
+
 def Consultar_produtos(mycursor, nome):
     try:
         sql = "SELECT * FROM produtos WHERE nome = %s"
