@@ -1,8 +1,17 @@
-from usuario import Usuario
+from modelos.usuario import Usuario
 
-class Cliente:
-    def __init__(self, monstrar_menu, consultar_menu, criar_pedido, consultar_historico):
-        self.monstrar_menu = monstrar_menu
-        self.consultar_menu = consultar_menu
-        self.criar_pedido = criar_pedido
-        self.consultar_historico = consultar_historico
+class Cliente(Usuario):
+    def __init__(self, id_utilizador, nome_utilizador, password_hash):
+        super().__init__(id_utilizador, nome_utilizador, password_hash, "cliente")
+
+    def mostrar_menu(self):
+        pass
+
+    def consultar_menu(self):
+        pass
+
+    def criar_pedido(self):
+        pass
+
+    def consultar_historico(self):
+        pass

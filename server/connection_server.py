@@ -1,9 +1,8 @@
+
 import mysql.connector
-import psycopg2
-from psycopg2 import OperationalError, DatabaseError
+
 
 def conectar_bd():
-    conexao = None
     try:
         conexao = mysql.connector.connect(
             host="localhost",
@@ -12,20 +11,19 @@ def conectar_bd():
             database="restaurante_delivery",
             connect_timeout=10
         )
-        return conexao
-    except OperationalError as e:
-        print(f"Erro ao conectar ao MySQL: {e}")
-        return None
 
-    except DatabaseError as e:
-        print(f"Erro de banco de dados: {e}")
-        return None
+        if conexao.is_connected():
+            print("Ligação ao MySQL estabelecida!")
+            return conexao
 
-    except Exception as e:
-        print(f"Ocorreu um erro inesperado: {e}")
-        return None
+    except mysql.connector.Error as erro:
+        print(f"Erro ao ligar ao MySQL: {erro}")
 
-conexao = conectar_bd()
+    return None
 
-if conexao.is_connected():
-    print("Ligação ao MySQL estabelecida")
+
+if __name__ == "__main__":
+    conexao = conectar_bd()
+
+    if conexao is not None:
+        conexao.close()
