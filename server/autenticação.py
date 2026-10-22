@@ -38,8 +38,6 @@ def autenticar_utilizador(mycursor, nome, password):
     if utilizador is None:
         return False
 
-    # Este exemplo pressupõe que o cursor devolve um dicionário.
-    return verificar_password(
-        password,
-        utilizador["password_hash"]
-    )
+    password_hash = utilizador[2]  # Supondo que a password_hash está na terceira coluna do resultado da consulta
+
+    return verificar_password(password, password_hash)

@@ -1,34 +1,30 @@
-def campo_obrigatorio(valor):
-    if valor is None or str(valor).strip() == "":
-        return False
-    return True
 
-def validar_quantidade(quantidade):
-    if isinstance(quantidade, int) and not isinstance(quantidade, bool):
-        if quantidade > 0:
-            return True
-        return False
+from comum.validadores import (
+    campo_obrigatorio,
+    validar_quantidade,
+    validar_preco,
+    validar_stock,
+    validar_produto
+)
 
-def validar_preco(preco):
-    try:
-        preco = float(preco)
+assert campo_obrigatorio("Hamburguer")
+assert not campo_obrigatorio("   ")
 
-        if preco >= 0 and preco != float("inf") and preco == preco:
-            return True
-        else:
-            return False
+assert validar_quantidade(2)
+assert not validar_quantidade(0)
+assert not validar_quantidade(-1)
 
-    except (ValueError, TypeError):
-        return False
+assert validar_preco(8.50)
+assert not validar_preco(float("nan"))
+assert not validar_preco(float("inf"))
+assert not validar_preco(-1)
 
-def validar_produto(nome, preco, stock):
-    if not campo_obrigatorio(nome):
-        return False
+assert validar_stock(0)
+assert validar_stock(10)
+assert not validar_stock(-1)
 
-    if not validar_preco(preco):
-        return False
+assert validar_produto("Pizza", 10.0, 5)
+assert validar_produto("Pizza", 10.0, 0)
+assert not validar_produto("", 10.0, 5)
 
-    if not validar_quantidade(stock):
-        return False
-    return True
-    
+print("Todos os testes dos validadores passaram!")

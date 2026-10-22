@@ -1,6 +1,4 @@
-
 import mysql.connector
-
 
 def conectar_bd():
     try:
