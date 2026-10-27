@@ -71,6 +71,7 @@ terminal do cliente. O servidor escuta na porta `5000`.
 
 - Consultar todos os pedidos.
 - Atualizar o stock de um produto.
+- Adicionar produtos com nome, descrição opcional, categoria, preço e stock inicial.
 
 ## Testes
 

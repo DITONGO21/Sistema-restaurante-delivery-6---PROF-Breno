@@ -87,6 +87,33 @@ def Consultar_produtos(mycursor, nome=""):
         return []
 
 
+def Adicionar_produto(
+    mybd,
+    mycursor,
+    nome,
+    descricao,
+    categoria,
+    preco,
+    stock,
+):
+    try:
+        mycursor.execute(
+            """
+            INSERT INTO produtos (nome, descricao, categoria, preco, stock)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (nome, descricao, categoria, preco, stock),
+        )
+        id_produto = mycursor.lastrowid
+        mybd.commit()
+        return id_produto
+
+    except mysql.connector.Error as erro:
+        print(f"Erro ao adicionar produto: {erro}")
+        mybd.rollback()
+        return None
+
+
 def Criar_pedidos(mybd, mycursor, id_utilizador, id_produto, quantidade):
     try:
         if (

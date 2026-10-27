@@ -39,6 +39,7 @@ def processar_pedido(pedido):
         }
 
     operacoes_admin_entrega = {
+        "adicionar_produto",
         "gerir_stock",
         "consultar_pedidos",
         "consultar_entregas",

@@ -1,8 +1,10 @@
+from decimal import Decimal
 import unittest
 from unittest.mock import patch
 
-from server.base_de_dados import Aceitar_entrega
+from server.base_de_dados import Aceitar_entrega, Adicionar_produto
 from server.operacoes_admin_entrega import processar_operacao_admin_entrega
+from server import socket_server
 
 
 class CursorSimples:
@@ -28,6 +30,17 @@ class CursorAtualizacao:
         self.parametros = parametros
 
 
+class CursorInsercao:
+    def __init__(self, lastrowid):
+        self.lastrowid = lastrowid
+        self.consulta = ""
+        self.parametros = None
+
+    def execute(self, consulta, parametros):
+        self.consulta = consulta
+        self.parametros = parametros
+
+
 class ConexaoSimples:
     def __init__(self):
         self.commits = 0
@@ -38,6 +51,26 @@ class ConexaoSimples:
 
     def rollback(self):
         self.rollbacks += 1
+
+
+class CursorRota:
+    def __init__(self):
+        self.closed = False
+
+    def close(self):
+        self.closed = True
+
+
+class ConexaoRota:
+    def __init__(self):
+        self.cursor_obj = CursorRota()
+        self.closed = False
+
+    def cursor(self):
+        return self.cursor_obj
+
+    def close(self):
+        self.closed = True
 
 
 class TestOperacoesAdminEntrega(unittest.TestCase):
@@ -77,6 +110,131 @@ class TestOperacoesAdminEntrega(unittest.TestCase):
 
         self.assertEqual(resposta["estado"], "erro")
         atualizar_stock.assert_not_called()
+
+    def test_admin_adiciona_produto(self):
+        cursor = CursorSimples([(9,)])
+
+        with patch(
+            "server.operacoes_admin_entrega.Adicionar_produto",
+            return_value=12,
+        ) as adicionar:
+            resposta = processar_operacao_admin_entrega(
+                "adicionar_produto",
+                {
+                    "id_utilizador": 9,
+                    "nome": "  Sumo  ",
+                    "descricao": "  Natural  ",
+                    "categoria": "  Bebidas  ",
+                    "preco": "2.50",
+                    "stock": 10,
+                },
+                self.conexao,
+                cursor,
+            )
+
+        self.assertEqual(resposta["estado"], "sucesso")
+        self.assertEqual(resposta["dados"]["id_produto"], 12)
+        chamada = adicionar.call_args.args
+        self.assertEqual(chamada[:4], (self.conexao, cursor, "Sumo", "Natural"))
+        self.assertEqual(chamada[4:], ("Bebidas", Decimal("2.50"), 10))
+
+    def test_pedido_adicionar_produto_e_encaminhado_pelo_servidor(self):
+        conexao = ConexaoRota()
+        resposta_esperada = {
+            "estado": "sucesso",
+            "mensagem": "Produto adicionado com sucesso.",
+            "dados": {"id_produto": 12},
+        }
+
+        with patch.object(socket_server, "conectar_bd", return_value=conexao):
+            with patch(
+                "server.socket_server.processar_operacao_admin_entrega",
+                return_value=resposta_esperada,
+            ) as processar:
+                resposta = socket_server.processar_pedido(
+                    {
+                        "operacao": "adicionar_produto",
+                        "dados": {"id_utilizador": 9, "nome": "Sumo"},
+                    }
+                )
+
+        self.assertEqual(resposta, resposta_esperada)
+        processar.assert_called_once_with(
+            "adicionar_produto",
+            {"id_utilizador": 9, "nome": "Sumo"},
+            conexao,
+            conexao.cursor_obj,
+        )
+        self.assertTrue(conexao.cursor_obj.closed)
+        self.assertTrue(conexao.closed)
+
+    def test_persistencia_de_produto_usa_insert_e_commit(self):
+        conexao = ConexaoSimples()
+        cursor = CursorInsercao(lastrowid=12)
+
+        id_produto = Adicionar_produto(
+            conexao,
+            cursor,
+            "Sumo",
+            "Natural",
+            "Bebidas",
+            Decimal("2.50"),
+            10,
+        )
+
+        self.assertEqual(id_produto, 12)
+        self.assertIn("INSERT INTO produtos", cursor.consulta)
+        self.assertEqual(
+            cursor.parametros,
+            ("Sumo", "Natural", "Bebidas", Decimal("2.50"), 10),
+        )
+        self.assertEqual(conexao.commits, 1)
+
+    def test_utilizador_nao_admin_nao_adiciona_produto(self):
+        cursor = CursorSimples([None])
+
+        with patch(
+            "server.operacoes_admin_entrega.Adicionar_produto"
+        ) as adicionar:
+            resposta = processar_operacao_admin_entrega(
+                "adicionar_produto",
+                {
+                    "id_utilizador": 9,
+                    "nome": "Sumo",
+                    "descricao": "",
+                    "categoria": "Bebidas",
+                    "preco": "2.50",
+                    "stock": 10,
+                },
+                self.conexao,
+                cursor,
+            )
+
+        self.assertEqual(resposta["estado"], "erro")
+        adicionar.assert_not_called()
+
+    def test_adicionar_produto_rejeita_preco_com_mais_de_duas_casas(self):
+        cursor = CursorSimples([(9,)])
+
+        with patch(
+            "server.operacoes_admin_entrega.Adicionar_produto"
+        ) as adicionar:
+            resposta = processar_operacao_admin_entrega(
+                "adicionar_produto",
+                {
+                    "id_utilizador": 9,
+                    "nome": "Sumo",
+                    "descricao": "",
+                    "categoria": "Bebidas",
+                    "preco": "2.555",
+                    "stock": 10,
+                },
+                self.conexao,
+                cursor,
+            )
+
+        self.assertEqual(resposta["estado"], "erro")
+        adicionar.assert_not_called()
 
     def test_admin_consulta_todos_os_pedidos(self):
         cursor = CursorSimples([(9,)])

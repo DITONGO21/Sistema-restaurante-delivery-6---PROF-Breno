@@ -4,6 +4,7 @@ from cliente.operations_clientes import (
     login_utilizador,
     criar_pedido,
     consultar_historico,
+    adicionar_produto,
     gerir_stock,
     consultar_pedidos,
     consultar_entregas,
@@ -167,6 +168,37 @@ def menu_gerir_stock(utilizador):
     print(resposta.get("mensagem", "Sem resposta do servidor."))
 
 
+def menu_adicionar_produto(utilizador):
+    from decimal import Decimal, InvalidOperation
+
+    nome = input("Nome do produto: ").strip()
+    descricao = input("Descrição (opcional): ").strip()
+    categoria = input("Categoria: ").strip()
+
+    try:
+        preco = Decimal(input("Preço (€): ").strip().replace(",", "."))
+        stock = int(input("Stock inicial: ").strip())
+    except (InvalidOperation, ValueError):
+        print("Introduz um preço e um stock válidos.")
+        return
+
+    if not preco.is_finite():
+        print("Introduz um preço válido.")
+        return
+
+    resposta = adicionar_produto(
+        utilizador["id_utilizador"],
+        nome,
+        descricao,
+        categoria,
+        str(preco),
+        stock,
+    )
+    print(resposta.get("mensagem", "Sem resposta do servidor."))
+    if resposta.get("estado") == "sucesso":
+        print("ID do produto:", resposta.get("dados", {}).get("id_produto"))
+
+
 def menu_consultar_pedidos(utilizador):
     resposta = consultar_pedidos(utilizador["id_utilizador"])
     print("\n--- TODOS OS PEDIDOS ---")
@@ -256,6 +288,7 @@ def menu_admin(utilizador):
         print("1 - Ver produtos")
         print("2 - Gerir stock")
         print("3 - Ver pedidos")
+        print("4 - Adicionar produto")
         print("0 - Terminar sessão")
 
         opcao = input("Escolhe uma opção: ").strip()
@@ -266,6 +299,8 @@ def menu_admin(utilizador):
             menu_gerir_stock(utilizador)
         elif opcao == "3":
             menu_consultar_pedidos(utilizador)
+        elif opcao == "4":
+            menu_adicionar_produto(utilizador)
         elif opcao == "0":
             print("Sessão terminada.")
             break

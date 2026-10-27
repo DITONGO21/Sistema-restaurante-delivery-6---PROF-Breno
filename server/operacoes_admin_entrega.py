@@ -1,4 +1,7 @@
+from decimal import Decimal, InvalidOperation
+
 from server.base_de_dados import (
+    Adicionar_produto,
     Aceitar_entrega,
     Atualizar_estado_entrega,
     Atualizar_stock,
@@ -32,6 +35,95 @@ def _validar_tipo_utilizador(cursor, id_utilizador, tipo):
 
 def processar_operacao_admin_entrega(operacao, dados, conexao, cursor):
     id_utilizador = dados.get("id_utilizador")
+
+    if operacao == "adicionar_produto":
+        if not _id_inteiro_positivo(id_utilizador) or not _validar_tipo_utilizador(
+            cursor, id_utilizador, "admin"
+        ):
+            return {
+                "estado": "erro",
+                "mensagem": "Administrador não encontrado.",
+                "dados": {},
+            }
+
+        nome = dados.get("nome")
+        descricao = dados.get("descricao", "")
+        categoria = dados.get("categoria")
+        preco = dados.get("preco")
+        stock = dados.get("stock")
+
+        if not isinstance(nome, str) or not nome.strip() or len(nome.strip()) > 100:
+            return {
+                "estado": "erro",
+                "mensagem": "O nome é obrigatório e pode ter até 100 caracteres.",
+                "dados": {},
+            }
+        if not isinstance(descricao, str):
+            return {
+                "estado": "erro",
+                "mensagem": "A descrição tem de ser texto.",
+                "dados": {},
+            }
+        if (
+            not isinstance(categoria, str)
+            or not categoria.strip()
+            or len(categoria.strip()) > 50
+        ):
+            return {
+                "estado": "erro",
+                "mensagem": "A categoria é obrigatória e pode ter até 50 caracteres.",
+                "dados": {},
+            }
+        if (
+            not isinstance(stock, int)
+            or isinstance(stock, bool)
+            or stock < 0
+        ):
+            return {
+                "estado": "erro",
+                "mensagem": "O stock tem de ser um inteiro igual ou superior a zero.",
+                "dados": {},
+            }
+
+        try:
+            preco_decimal = Decimal(str(preco))
+        except (InvalidOperation, ValueError):
+            preco_decimal = Decimal("NaN")
+
+        if (
+            isinstance(preco, bool)
+            or not preco_decimal.is_finite()
+            or preco_decimal < 0
+            or preco_decimal > Decimal("99999999.99")
+            or preco_decimal != preco_decimal.quantize(Decimal("0.01"))
+        ):
+            return {
+                "estado": "erro",
+                "mensagem": "O preço tem de ser válido, não negativo e ter no máximo duas casas decimais.",
+                "dados": {},
+            }
+
+        id_produto = Adicionar_produto(
+            conexao,
+            cursor,
+            nome.strip(),
+            descricao.strip(),
+            categoria.strip(),
+            preco_decimal,
+            stock,
+        )
+        if id_produto is None:
+            return {
+                "estado": "erro",
+                "mensagem": "Não foi possível adicionar o produto.",
+                "dados": {},
+            }
+
+        return {
+            "estado": "sucesso",
+            "mensagem": "Produto adicionado com sucesso.",
+            "dados": {"id_produto": id_produto},
+        }
 
     if operacao == "gerir_stock":
         id_produto = dados.get("id_produto")

@@ -15,6 +15,7 @@ permissoes = {
 
     "admin": (
         "listar_produtos",
+        "adicionar_produto",
         "gerir_produtos",
         "gerir_utilizadores",
         "consultar_pedidos",

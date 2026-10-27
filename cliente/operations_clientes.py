@@ -44,6 +44,27 @@ def consultar_historico(id_utilizador):
     )
 
 
+def adicionar_produto(
+    id_utilizador,
+    nome,
+    descricao,
+    categoria,
+    preco,
+    stock,
+):
+    return enviar_pedido(
+        "adicionar_produto",
+        {
+            "id_utilizador": id_utilizador,
+            "nome": nome,
+            "descricao": descricao,
+            "categoria": categoria,
+            "preco": preco,
+            "stock": stock,
+        },
+    )
+
+
 def gerir_stock(id_utilizador, id_produto, stock):
     return enviar_pedido(
         "gerir_stock",
