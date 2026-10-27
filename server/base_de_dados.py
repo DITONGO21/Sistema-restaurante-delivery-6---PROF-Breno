@@ -1,5 +1,18 @@
-
 import mysql.connector
+
+VALID_ESTADOS_PEDIDO = {
+    "pendente",
+    "em preparacao",
+    "em entrega",
+    "entregue",
+    "cancelado",
+}
+
+
+def validar_estado_pedido(estado):
+    if not isinstance(estado, str):
+        return False
+    return estado.strip().lower() in VALID_ESTADOS_PEDIDO
 
 
 def Registrar_utilizadores(mybd, mycursor, nome, password_hash, tipo):
@@ -170,9 +183,14 @@ def Atualizar_stock(mybd, mycursor, id_produto, nova_quantidade):
         mycursor.execute(sql, (nova_quantidade, id_produto))
 
         if mycursor.rowcount == 0:
-            mybd.rollback()
-            print("Produto não encontrado ou stock inalterado.")
-            return False
+            mycursor.execute(
+                "SELECT 1 FROM produtos WHERE id_produto = %s",
+                (id_produto,),
+            )
+            if mycursor.fetchone() is None:
+                mybd.rollback()
+                print("Produto não encontrado.")
+                return False
 
         mybd.commit()
         return True
@@ -200,3 +218,97 @@ def Consultar_historico_pedidos(mycursor, id_utilizador):
     except mysql.connector.Error as erro:
         print(f"Erro ao consultar histórico: {erro}")
         return None
+
+
+def Consultar_pedidos(mycursor):
+    try:
+        mycursor.execute(
+            """
+            SELECT p.id_pedido, p.id_cliente, u.nome_utilizador,
+                   p.data_pedido, p.estado, p.valor_total
+            FROM pedidos AS p
+            JOIN utilizadores AS u
+              ON u.id_utilizador = p.id_cliente
+            ORDER BY p.data_pedido DESC, p.id_pedido DESC
+            """
+        )
+        return mycursor.fetchall()
+
+    except mysql.connector.Error as erro:
+        print(f"Erro ao consultar pedidos: {erro}")
+        return None
+
+
+def Consultar_entregas(mycursor, id_entregador):
+    try:
+        mycursor.execute(
+            """
+            SELECT p.id_pedido, u.nome_utilizador, p.data_pedido,
+                   p.estado, p.valor_total, p.id_entregador
+            FROM pedidos AS p
+            JOIN utilizadores AS u
+              ON u.id_utilizador = p.id_cliente
+            WHERE p.estado = 'pendente'
+               OR (p.id_entregador = %s AND p.estado = 'em entrega')
+            ORDER BY p.data_pedido ASC, p.id_pedido ASC
+            """,
+            (id_entregador,),
+        )
+        return mycursor.fetchall()
+
+    except mysql.connector.Error as erro:
+        print(f"Erro ao consultar entregas: {erro}")
+        return None
+
+
+def Aceitar_entrega(mybd, mycursor, id_pedido, id_entregador):
+    try:
+        mycursor.execute(
+            """
+            UPDATE pedidos
+            SET id_entregador = %s, estado = 'em entrega'
+            WHERE id_pedido = %s
+              AND estado = 'pendente'
+              AND id_entregador IS NULL
+            """,
+            (id_entregador, id_pedido),
+        )
+        if mycursor.rowcount != 1:
+            mybd.rollback()
+            return False
+
+        mybd.commit()
+        return True
+
+    except mysql.connector.Error as erro:
+        print(f"Erro ao aceitar entrega: {erro}")
+        mybd.rollback()
+        return False
+
+
+def Atualizar_estado_entrega(mybd, mycursor, id_pedido, id_entregador, estado):
+    if estado != "entregue":
+        return False
+
+    try:
+        mycursor.execute(
+            """
+            UPDATE pedidos
+            SET estado = %s
+            WHERE id_pedido = %s
+              AND id_entregador = %s
+              AND estado = 'em entrega'
+            """,
+            (estado, id_pedido, id_entregador),
+        )
+        if mycursor.rowcount != 1:
+            mybd.rollback()
+            return False
+
+        mybd.commit()
+        return True
+
+    except mysql.connector.Error as erro:
+        print(f"Erro ao atualizar estado da entrega: {erro}")
+        mybd.rollback()
+        return False

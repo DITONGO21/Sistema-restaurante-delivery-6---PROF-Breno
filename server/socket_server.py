@@ -13,8 +13,9 @@ from server.autenticação import (
     registar_utilizador,
     autenticar_utilizador
 )
+from server.operacoes_admin_entrega import processar_operacao_admin_entrega
 
-HOST = "127.0.0.1"
+HOST = "0.0.0.0"
 PORT = 5000
 
 
@@ -27,6 +28,7 @@ def processar_pedido(pedido):
         }
 
     operacao = pedido.get("operacao")
+    print(f"Operação recebida: {operacao!r}")
     dados = pedido.get("dados", {})
 
     if not isinstance(dados, dict):
@@ -35,6 +37,41 @@ def processar_pedido(pedido):
             "mensagem": "Dados inválidos",
             "dados": {}
         }
+
+    operacoes_admin_entrega = {
+        "gerir_stock",
+        "consultar_pedidos",
+        "consultar_entregas",
+        "aceitar_entrega",
+        "atualizar_estado_entrega",
+    }
+    if operacao in operacoes_admin_entrega:
+        conexao = conectar_bd()
+        if conexao is None:
+            return {
+                "estado": "erro",
+                "mensagem": "Erro de ligação à base de dados",
+                "dados": {}
+            }
+
+        cursor = None
+        try:
+            cursor = conexao.cursor()
+            return processar_operacao_admin_entrega(
+                operacao, dados, conexao, cursor
+            )
+        except Exception as erro:
+            print(f"Erro ao processar {operacao}: {erro}")
+            conexao.rollback()
+            return {
+                "estado": "erro",
+                "mensagem": "Erro ao processar a operação",
+                "dados": {}
+            }
+        finally:
+            if cursor is not None:
+                cursor.close()
+            conexao.close()
 
     # LISTAR PRODUTOS
     if operacao == "listar_produtos":
@@ -118,12 +155,11 @@ def processar_pedido(pedido):
             nome = nome.strip()
 
             if operacao == "registar":
-                tipo = dados.get("tipo", "cliente")
-
-                if tipo != "cliente":
+                tipo = str(dados.get("tipo", "cliente")).strip().lower()
+                if tipo not in {"cliente", "entregador", "admin"}:
                     return {
                         "estado": "erro",
-                        "mensagem": "Só é permitido registar contas de cliente",
+                        "mensagem": "Tipo de utilizador inválido. Escolha cliente, entregador ou admin.",
                         "dados": {}
                     }
 
@@ -132,7 +168,7 @@ def processar_pedido(pedido):
                     cursor,
                     nome,
                     password,
-                    "cliente"
+                    tipo
                 )
 
                 if not sucesso:
@@ -144,7 +180,7 @@ def processar_pedido(pedido):
 
                 return {
                     "estado": "sucesso",
-                    "mensagem": "Conta criada com sucesso",
+                    "mensagem": f"Conta de {tipo} criada com sucesso",
                     "dados": {}
                 }
 

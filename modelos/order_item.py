@@ -12,9 +12,6 @@ class Produto:
         if novo_preco < 0:
             return False
 
-    #def id(self, id):
-
-
         self.preco = novo_preco
         return True
 

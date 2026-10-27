@@ -1,15 +1,14 @@
-
 from cliente.connection_clientes import enviar_pedido
 
-id_cliente = 3
-id_produto = 4
+id_cliente = 1
+id_produto = 1
 
 resposta = enviar_pedido(
     "criar_pedido",
     {
         "id_utilizador": id_cliente,
         "id_produto": id_produto,
-        "quantidade": 999999
+        "quantidade": 1
     }
 )
 

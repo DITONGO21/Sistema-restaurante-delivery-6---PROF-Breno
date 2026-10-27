@@ -1,4 +1,3 @@
-
 from comum.validadores import (
     campo_obrigatorio,
     validar_quantidade,

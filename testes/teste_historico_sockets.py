@@ -1,9 +1,8 @@
-
 from cliente.connection_clientes import enviar_pedido
 
 resposta = enviar_pedido(
     "historico_pedidos",
-    {"id_utilizador": 3}
+    {"id_utilizador": 1}
 )
 
 print("Resposta:", resposta)

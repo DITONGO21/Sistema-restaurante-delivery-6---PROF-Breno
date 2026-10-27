@@ -50,8 +50,12 @@ mycursor.execute(
             'cancelado'
         ) NOT NULL DEFAULT 'pendente',
         valor_total DECIMAL(10,2) NOT NULL CHECK (valor_total >= 0),
+        id_entregador INT NULL,
         CONSTRAINT fk_pedidos_cliente
             FOREIGN KEY (id_cliente)
+            REFERENCES utilizadores(id_utilizador),
+        CONSTRAINT fk_pedidos_entregador
+            FOREIGN KEY (id_entregador)
             REFERENCES utilizadores(id_utilizador)
     )
     """
@@ -74,6 +78,26 @@ mycursor.execute(
     )
     """
 )
+
+mycursor.execute(
+    """
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = 'restaurante_delivery'
+      AND TABLE_NAME = 'pedidos'
+      AND COLUMN_NAME = 'id_entregador'
+    """
+)
+if mycursor.fetchone()[0] == 0:
+    mycursor.execute(
+        """
+        ALTER TABLE pedidos
+        ADD COLUMN id_entregador INT NULL,
+        ADD CONSTRAINT fk_pedidos_entregador
+            FOREIGN KEY (id_entregador)
+            REFERENCES utilizadores(id_utilizador)
+        """
+    )
 
 mycursor.close()
 mydb.close()

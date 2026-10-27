@@ -1,4 +1,3 @@
-
 from comum.protocologo import criar_mensagem, ler_mensagem, criar_resposta
 
 mensagem = criar_mensagem("listar_produtos", {"nome": "Pizza"})

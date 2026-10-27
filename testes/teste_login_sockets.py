@@ -1,4 +1,3 @@
-
 from cliente.connection_clientes import enviar_pedido
 
 nome = "teste_socket_novo"

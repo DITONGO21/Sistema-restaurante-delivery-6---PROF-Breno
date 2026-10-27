@@ -13,7 +13,7 @@ MySQL.
 Instala os pacotes necessários:
 
 ```powershell
-python -m pip install mysql-connector-python bcrypt
+python -m pip install -r requirements.txt
 ```
 
 ## Configuração da base de dados

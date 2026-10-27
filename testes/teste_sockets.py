@@ -1,4 +1,3 @@
-
 from cliente.connection_clientes import enviar_pedido
 
 resposta = enviar_pedido("listar_produtos", {"nome": "Pizza"})
