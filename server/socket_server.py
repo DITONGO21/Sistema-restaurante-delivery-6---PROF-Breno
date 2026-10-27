@@ -1,5 +1,6 @@
 
 import json
+import os
 import socket
 
 from server.connection_server import conectar_bd
@@ -15,8 +16,8 @@ from server.autenticação import (
 )
 from server.operacoes_admin_entrega import processar_operacao_admin_entrega
 
-HOST = "0.0.0.0"
-PORT = 5000
+HOST = os.getenv("DELIVER_BIND_HOST", "0.0.0.0")
+PORT = int(os.getenv("DELIVER_PORT", "5000"))
 
 
 def processar_pedido(pedido):
