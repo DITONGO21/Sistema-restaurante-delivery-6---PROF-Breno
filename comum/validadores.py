@@ -1,12 +1,9 @@
-
 import math
-
 
 def campo_obrigatorio(valor):
     if valor is None or str(valor).strip() == "":
         return False
     return True
-
 
 def validar_quantidade(quantidade):
     return (
@@ -15,7 +12,6 @@ def validar_quantidade(quantidade):
         and quantidade > 0
     )
 
-
 def validar_preco(preco):
     try:
         preco = float(preco)
@@ -23,14 +19,12 @@ def validar_preco(preco):
     except (ValueError, TypeError):
         return False
 
-
 def validar_stock(stock):
     return (
         isinstance(stock, int)
         and not isinstance(stock, bool)
         and stock >= 0
     )
-
 
 def validar_produto(nome, preco, stock):
     if not campo_obrigatorio(nome):
