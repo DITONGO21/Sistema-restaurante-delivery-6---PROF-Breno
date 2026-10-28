@@ -19,7 +19,6 @@ def conectar_bd():
 
     return None
 
-
 if __name__ == "__main__":
     conexao = conectar_bd()
 
