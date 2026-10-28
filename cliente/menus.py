@@ -18,7 +18,6 @@ TIPOS_UTILIZADOR = {
     "3": "admin",
 }
 
-
 def normalizar_tipo_utilizador(tipo):
     if tipo is None:
         return "cliente"
@@ -31,7 +30,6 @@ def normalizar_tipo_utilizador(tipo):
     if texto in {"admin", "3"}:
         return "admin"
     return "cliente"
-
 
 def mostrar_produtos():
     nome = input("Nome do produto (Enter para todos): ").strip()
@@ -57,7 +55,6 @@ def mostrar_produtos():
             f"Stock: {produto[5]}"
         )
 
-
 def menu_registo():
     nome = input("Nome de utilizador: ").strip()
     password = input("Palavra-passe: ")
@@ -73,7 +70,6 @@ def menu_registo():
     print(resposta.get("mensagem", "Sem resposta do servidor."))
     return resposta
 
-
 def menu_login():
     nome = input("Nome de utilizador: ").strip()
     password = input("Palavra-passe: ")
@@ -88,7 +84,6 @@ def menu_login():
         return dados
 
     return None
-
 
 def menu_criar_pedido(utilizador):
     try:
@@ -109,7 +104,6 @@ def menu_criar_pedido(utilizador):
     except ValueError:
         print("Introduz números inteiros válidos.")
 
-
 def menu_historico(utilizador):
     resposta = consultar_historico(utilizador["id_utilizador"])
 
@@ -128,7 +122,6 @@ def menu_historico(utilizador):
     for pedido in pedidos:
         estado = pedido[3] if len(pedido) > 3 else "desconhecido"
         print(f"Pedido: {pedido[0]} | Estado: {estado} | Total: {pedido[4] if len(pedido) > 4 else 'N/A'}")
-
 
 def menu_entregas(utilizador):
     resposta = consultar_entregas(utilizador["id_utilizador"])
@@ -155,7 +148,6 @@ def menu_entregas(utilizador):
             f"Estado: {entrega[3]} | Total: {entrega[4]} € | {atribuicao}"
         )
 
-
 def menu_gerir_stock(utilizador):
     try:
         id_produto = int(input("ID do produto: "))
@@ -166,7 +158,6 @@ def menu_gerir_stock(utilizador):
 
     resposta = gerir_stock(utilizador["id_utilizador"], id_produto, stock)
     print(resposta.get("mensagem", "Sem resposta do servidor."))
-
 
 def menu_adicionar_produto(utilizador):
     from decimal import Decimal, InvalidOperation
@@ -198,7 +189,6 @@ def menu_adicionar_produto(utilizador):
     if resposta.get("estado") == "sucesso":
         print("ID do produto:", resposta.get("dados", {}).get("id_produto"))
 
-
 def menu_consultar_pedidos(utilizador):
     resposta = consultar_pedidos(utilizador["id_utilizador"])
     print("\n--- TODOS OS PEDIDOS ---")
@@ -217,7 +207,6 @@ def menu_consultar_pedidos(utilizador):
             f"Pedido: {pedido[0]} | Cliente: {pedido[2]} (ID: {pedido[1]}) | "
             f"Data: {pedido[3]} | Estado: {pedido[4]} | Total: {pedido[5]} €"
         )
-
 
 def menu_cliente(utilizador):
     while True:
@@ -240,7 +229,6 @@ def menu_cliente(utilizador):
             break
         else:
             print("Opção inválida.")
-
 
 def menu_entregador(utilizador):
     while True:
@@ -281,7 +269,6 @@ def menu_entregador(utilizador):
         else:
             print("Opção inválida.")
 
-
 def menu_admin(utilizador):
     while True:
         print(f"\n=== MENU DO ADMIN - {utilizador.get('nome_utilizador', 'Utilizador')} ===")
@@ -306,7 +293,6 @@ def menu_admin(utilizador):
             break
         else:
             print("Opção inválida.")
-
 
 def menu_por_tipo(utilizador):
     tipo = normalizar_tipo_utilizador(utilizador.get("tipo_utilizador") if isinstance(utilizador, dict) else utilizador)
