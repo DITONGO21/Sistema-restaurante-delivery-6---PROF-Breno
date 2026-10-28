@@ -1,4 +1,3 @@
-
 import json
 import os
 import socket
@@ -18,7 +17,6 @@ from server.operacoes_admin_entrega import processar_operacao_admin_entrega
 
 HOST = os.getenv("DELIVER_BIND_HOST", "0.0.0.0")
 PORT = int(os.getenv("DELIVER_PORT", "5000"))
-
 
 def processar_pedido(pedido):
     if not isinstance(pedido, dict):
@@ -164,7 +162,6 @@ def processar_pedido(pedido):
                         "mensagem": "Tipo de utilizador inválido. Escolha cliente, entregador ou admin.",
                         "dados": {}
                     }
-
                 sucesso = registar_utilizador(
                     conexao,
                     cursor,
@@ -402,7 +399,6 @@ def processar_pedido(pedido):
         "dados": {}
     }
 
-
 def iniciar_server():
     servidor_socket = socket.socket(
         socket.AF_INET,
@@ -470,7 +466,6 @@ def iniciar_server():
 
     finally:
         servidor_socket.close()
-
 
 if __name__ == "__main__":
     iniciar_server()
