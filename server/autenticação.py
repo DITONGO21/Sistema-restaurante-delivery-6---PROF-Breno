@@ -16,7 +16,6 @@ def verificar_password(password, password_hash):
         password.encode("utf-8"),
         password_hash.encode("utf-8")
     )
-
 def registar_utilizador(mybd, mycursor, nome, password, tipo):
     if Impedir_Duplicados(mycursor, nome):
         return False
@@ -26,7 +25,6 @@ def registar_utilizador(mybd, mycursor, nome, password, tipo):
     return Registrar_utilizadores(
         mybd, mycursor, nome, password_hash, tipo
     )
-
 def autenticar_utilizador(mycursor, nome, password):
     utilizador = Consultar_utilizador(mycursor, nome)
 
