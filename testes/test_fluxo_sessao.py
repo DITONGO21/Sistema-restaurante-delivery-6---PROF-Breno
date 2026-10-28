@@ -3,7 +3,6 @@ import unittest
 from cliente.menus import normalizar_tipo_utilizador
 from server.base_de_dados import validar_estado_pedido
 
-
 class TestFluxoSessao(unittest.TestCase):
     def test_normalizar_tipo_utilizador(self):
         self.assertEqual(normalizar_tipo_utilizador("Cliente"), "cliente")
