@@ -11,7 +11,6 @@ def calcular_total(itens):
     return round(total, 2)
 
 class TesteOrders(unittest.TestCase):
-
     def test_calcular_total(self):
         itens = [
             {"preco": 5.00, "quantidade": 2},
