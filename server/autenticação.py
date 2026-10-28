@@ -5,7 +5,6 @@ from server.base_de_dados import (
     Impedir_Duplicados,
     Registrar_utilizadores
 )
-
 def criar_hash(password):
     return bcrypt.hashpw(
         password.encode("utf-8"),
