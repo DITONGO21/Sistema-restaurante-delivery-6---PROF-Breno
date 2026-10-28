@@ -8,12 +8,10 @@ VALID_ESTADOS_PEDIDO = {
     "cancelado",
 }
 
-
 def validar_estado_pedido(estado):
     if not isinstance(estado, str):
         return False
     return estado.strip().lower() in VALID_ESTADOS_PEDIDO
-
 
 def Registrar_utilizadores(mybd, mycursor, nome, password_hash, tipo):
     try:
@@ -32,7 +30,6 @@ def Registrar_utilizadores(mybd, mycursor, nome, password_hash, tipo):
         mybd.rollback()
         return False
 
-
 def Consultar_utilizador(mycursor, nome):
     try:
         sql = """
@@ -47,7 +44,6 @@ def Consultar_utilizador(mycursor, nome):
     except mysql.connector.Error as erro:
         print(f"Erro ao consultar utilizador: {erro}")
         return None
-
 
 def Impedir_Duplicados(mycursor, nome):
     try:
@@ -64,7 +60,6 @@ def Impedir_Duplicados(mycursor, nome):
     except mysql.connector.Error as erro:
         print(f"Erro ao verificar utilizador duplicado: {erro}")
         return True
-
 
 def Consultar_produtos(mycursor, nome=""):
     try:
@@ -85,7 +80,6 @@ def Consultar_produtos(mycursor, nome=""):
     except mysql.connector.Error as erro:
         print(f"Erro ao consultar produtos: {erro}")
         return []
-
 
 def Adicionar_produto(
     mybd,
@@ -112,7 +106,6 @@ def Adicionar_produto(
         print(f"Erro ao adicionar produto: {erro}")
         mybd.rollback()
         return None
-
 
 def Criar_pedidos(mybd, mycursor, id_utilizador, id_produto, quantidade):
     try:
@@ -190,7 +183,6 @@ def Criar_pedidos(mybd, mycursor, id_utilizador, id_produto, quantidade):
         print(f"Erro ao criar pedido: {erro}")
         return False
 
-
 def Atualizar_stock(mybd, mycursor, id_produto, nova_quantidade):
     try:
         if (
@@ -227,7 +219,6 @@ def Atualizar_stock(mybd, mycursor, id_produto, nova_quantidade):
         mybd.rollback()
         return False
 
-
 def Consultar_historico_pedidos(mycursor, id_utilizador):
     try:
         mycursor.execute(
@@ -246,7 +237,6 @@ def Consultar_historico_pedidos(mycursor, id_utilizador):
         print(f"Erro ao consultar histórico: {erro}")
         return None
 
-
 def Consultar_pedidos(mycursor):
     try:
         mycursor.execute(
@@ -264,7 +254,6 @@ def Consultar_pedidos(mycursor):
     except mysql.connector.Error as erro:
         print(f"Erro ao consultar pedidos: {erro}")
         return None
-
 
 def Consultar_entregas(mycursor, id_entregador):
     try:
@@ -286,7 +275,6 @@ def Consultar_entregas(mycursor, id_entregador):
     except mysql.connector.Error as erro:
         print(f"Erro ao consultar entregas: {erro}")
         return None
-
 
 def Aceitar_entrega(mybd, mycursor, id_pedido, id_entregador):
     try:
@@ -311,7 +299,6 @@ def Aceitar_entrega(mybd, mycursor, id_pedido, id_entregador):
         print(f"Erro ao aceitar entrega: {erro}")
         mybd.rollback()
         return False
-
 
 def Atualizar_estado_entrega(mybd, mycursor, id_pedido, id_entregador, estado):
     if estado != "entregue":
