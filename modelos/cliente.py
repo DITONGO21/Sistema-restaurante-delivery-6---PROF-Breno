@@ -1,6 +1,5 @@
 from modelos.usuario import Usuario
 
-
 class Cliente(Usuario):
     def __init__(self, id_utilizador, nome_utilizador, password_hash):
         super().__init__(id_utilizador, nome_utilizador, password_hash, "cliente")
@@ -10,7 +9,6 @@ class Cliente(Usuario):
             "tipo": "cliente",
             "opcoes": ["ver_produtos", "criar_pedido", "historico"],
         }
-
     def consultar_menu(self):
         return self.mostrar_menu()
 
