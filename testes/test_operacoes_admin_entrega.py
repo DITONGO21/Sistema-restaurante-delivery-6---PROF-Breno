@@ -6,7 +6,6 @@ from server.base_de_dados import Aceitar_entrega, Adicionar_produto
 from server.operacoes_admin_entrega import processar_operacao_admin_entrega
 from server import socket_server
 
-
 class CursorSimples:
     def __init__(self, resultados):
         self.resultados = iter(resultados)
@@ -18,7 +17,6 @@ class CursorSimples:
     def fetchone(self):
         return next(self.resultados)
 
-
 class CursorAtualizacao:
     def __init__(self, rowcount):
         self.rowcount = rowcount
@@ -29,7 +27,6 @@ class CursorAtualizacao:
         self.consulta = consulta
         self.parametros = parametros
 
-
 class CursorInsercao:
     def __init__(self, lastrowid):
         self.lastrowid = lastrowid
@@ -39,7 +36,6 @@ class CursorInsercao:
     def execute(self, consulta, parametros):
         self.consulta = consulta
         self.parametros = parametros
-
 
 class ConexaoSimples:
     def __init__(self):
@@ -52,14 +48,12 @@ class ConexaoSimples:
     def rollback(self):
         self.rollbacks += 1
 
-
 class CursorRota:
     def __init__(self):
         self.closed = False
 
     def close(self):
         self.closed = True
-
 
 class ConexaoRota:
     def __init__(self):
@@ -71,7 +65,6 @@ class ConexaoRota:
 
     def close(self):
         self.closed = True
-
 
 class TestOperacoesAdminEntrega(unittest.TestCase):
     def setUp(self):
