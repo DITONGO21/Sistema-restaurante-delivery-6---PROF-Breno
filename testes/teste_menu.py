@@ -1,7 +1,5 @@
 import unittest
-
 from comum.validadores import campo_obrigatorio, validar_preco, validar_quantidade
-
 
 class TesteMenu(unittest.TestCase):
 
