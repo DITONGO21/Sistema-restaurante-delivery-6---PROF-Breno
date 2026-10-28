@@ -9,14 +9,12 @@ from server.base_de_dados import (
     Consultar_pedidos,
 )
 
-
 def _id_inteiro_positivo(valor):
     return (
         isinstance(valor, int)
         and not isinstance(valor, bool)
         and valor > 0
     )
-
 
 def _validar_tipo_utilizador(cursor, id_utilizador, tipo):
     if not _id_inteiro_positivo(id_utilizador):
@@ -31,7 +29,6 @@ def _validar_tipo_utilizador(cursor, id_utilizador, tipo):
         (id_utilizador, tipo),
     )
     return cursor.fetchone() is not None
-
 
 def processar_operacao_admin_entrega(operacao, dados, conexao, cursor):
     id_utilizador = dados.get("id_utilizador")
