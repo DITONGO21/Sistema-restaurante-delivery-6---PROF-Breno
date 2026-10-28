@@ -5,7 +5,6 @@ from cliente.menus import (
     menu_por_tipo
 )
 
-
 def main():
     while True:
         print("\n=== DELIVER RESTAURANT ===")
