@@ -1,6 +1,5 @@
 from server.base_de_dados import Atualizar_stock
 
-
 def atualizar_stock(conexao, cursor, id_produto, nova_quantidade):
     if (
         not isinstance(id_produto, int)
