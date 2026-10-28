@@ -1,5 +1,4 @@
 class Produto:
-
     def __init__(self, id_produto, nome, descricao, categoria, preco, stock):
         self.id_produto = id_produto
         self.nome = nome
