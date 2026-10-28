@@ -5,13 +5,11 @@ import socket
 HOST = os.getenv("DELIVER_HOST", "127.0.0.1")
 PORT = int(os.getenv("DELIVER_PORT", "5000"))
 
-
 def enviar_pedido(operacao, dados=None):
     pedido = {
         "operacao": operacao,
         "dados": dados or {}
     }
-
     print("A enviar:", pedido)
 
     try:
@@ -22,7 +20,6 @@ def enviar_pedido(operacao, dados=None):
             cliente_socket.sendall(
                 json.dumps(pedido, ensure_ascii=False).encode("utf-8")
             )
-
             resposta = cliente_socket.recv(4096)
 
         return json.loads(resposta.decode("utf-8"))
